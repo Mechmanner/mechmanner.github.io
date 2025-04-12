@@ -1,42 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube API</title>
-</head>
-<body>
-    YouTube Subscribers
-    <div id="subCount"></div>
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+  /**
+   * Sample JavaScript code for youtube.subscriptions.list
+   * See instructions for running APIs Explorer code samples locally:
+   * https://developers.google.com/explorer-help/code-samples#javascript
+   */
 
-    <script>
-
-    // Get Subscribers
-    const youtubeKey = ' AIzaSyBkxLHuTNdwzZg5RN6Lg_svkpw35LM62ZA';
-    const youtubeUser = ' aE8qitPEc4h_1GxCFFYCjQ';
-    const subCount = document.getElementById('subCount');
-    const delay = 1000; // 10 min
-
-    let getSubscribers = () => {
-
-        fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${youtubeUser}&key=${youtubeKey}`)
-        .then(response => {
-            return response.json()
-        })
-        .then(data => {
-            console.log(data);
-            subCount.innerHTML = data["items"][0].statistics.subscriberCount;
-        })
-
-    }
-
-    setInterval(() => {
-        getSubscribers();
-    }, delay);
-
-    </script>
-</body>
-</html>
-<script src="https://apis.google.com/js/platform.js"></script>
-
-<div class="g-ytsubscribe" data-channel="@Mechmanner" data-layout="default" data-count="default"></div>
+  function authenticate() {
+    return gapi.auth2.getAuthInstance()
+        .signIn({scope: "https://www.googleapis.com/auth/youtube.readonly"})
+        .then(function() { console.log("Sign-in successful"); },
+              function(err) { console.error("Error signing in", err); });
+  }
+  function loadClient() {
+    gapi.client.setApiKey("AIzaSyBkxLHuTNdwzZg5RN6Lg_svkpw35LM62ZA");
+    return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
+        .then(function() { console.log("GAPI client loaded for API"); },
+              function(err) { console.error("Error loading GAPI client for API", err); });
+  }
+  // Make sure the client is loaded and sign-in is complete before calling this method.
+  function execute() {
+    return gapi.client.youtube.subscriptions.list({
+      "part": [
+        "snippet,contentDetails"
+      ],
+      "mine": true
+    })
+        .then(function(response) {
+                // Handle the results here (response.result has the parsed body).
+                console.log("Response", response);
+              },
+              function(err) { console.error("Execute error", err); });
+  }
+  gapi.load("client:auth2", function() {
+    gapi.auth2.init({client_id: "aE8qitPEc4h_1GxCFFYCjQ"});
+  });
+</script>
+<button onclick="authenticate().then(loadClient)">authorize and load</button>
+<button onclick="execute()">execute</button>
