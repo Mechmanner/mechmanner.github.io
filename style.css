@@ -3,3 +3,10 @@ html {
   color:white;
   background-color:#15202b;
 }
+body {
+  font-family:verdana;
+  color:white;
+  background-color:#15202b;
+  margin-left:10%;
+  margin-right:10%;
+}
